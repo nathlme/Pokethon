@@ -1,0 +1,1 @@
+# Y'a rien pour le moment mais ça permet d'importer le dossier "app" (un peu comme les packages python)
