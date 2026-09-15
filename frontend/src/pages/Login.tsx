@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-
+import { Link } from "react-router-dom";
 
 type FormData = {
     email: string;
@@ -29,12 +29,12 @@ export default function Login() {
             <h1>Connexion</h1>
             
             <form onSubmit={handleSubmit}> 
-                <label>Email :</label>
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} />
-                <label>Mot de passe :</label>
-                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}/>
+                <label>Email :</label><br />
+                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} /><br />
+                <label>Mot de passe :</label><br />
+                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}/><br />
 
-                <button type="submit">Se connecter</button>
+                <button type="submit">Se connecter</button> <p>Pas encore de compte ? <Link to="/register">S'inscrire ici</Link> </p>
             </form>
         </div>
     );
