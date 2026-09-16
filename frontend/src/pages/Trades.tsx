@@ -1,69 +1,74 @@
-export default function Exchanges() {
+export default function Trades() {
     return (
         <main>
-            <h1>Échanges</h1>
+            <h1>Trades</h1>
 
             <section>
-                <h2>Proposer un échange</h2>
+                <h2>Create a trade</h2>
 
                 <form>
                     <label htmlFor="offered-capture">
-                        Pokémon à offrir :
+                        Pokémon to offer:
                     </label>
 
                     <select id="offered-capture">
-                        <option value="">Choisir un Pokémon</option>
+                        <option value="">Choose a Pokémon</option>
                     </select>
 
                     <br />
 
                     <label htmlFor="target-user">
-                        Joueur :
+                        Player:
                     </label>
 
                     <select id="target-user">
-                        <option value="">Choisir un joueur</option>
+                        <option value="">Choose a player</option>
                     </select>
 
                     <br />
 
                     <label htmlFor="requested-capture">
-                        Pokémon demandé :
+                        Requested Pokémon:
                     </label>
 
                     <select id="requested-capture">
-                        <option value="">Choisir un Pokémon</option>
+                        <option value="">Choose a Pokémon</option>
                     </select>
 
                     <br />
 
                     <button type="submit">
-                        Proposer l'échange
+                        Create trade
                     </button>
                 </form>
             </section>
 
             <section>
-                <h2>Échanges reçus</h2>
+                <h2>Received trades</h2>
 
                 <article>
-                    <p>Échange proposé par : Joueur exemple</p>
-                    <p>Il propose : Pikachu</p>
-                    <p>Il demande : Carapuce</p>
+                    <p>From: Example player</p>
+                    <p>Offered Pokémon: Pikachu</p>
+                    <p>Requested Pokémon: Squirtle</p>
 
-                    <button type="button">Accepter</button>
-                    <button type="button">Refuser</button>
+                    <button type="button">
+                        Accept
+                    </button>
+
+                    <button type="button">
+                        Refuse
+                    </button>
                 </article>
             </section>
 
             <section>
-                <h2>Échanges envoyés</h2>
+                <h2>Sent trades</h2>
 
                 <article>
-                    <p>Destinataire : Joueur exemple</p>
-                    <p>Vous proposez : Bulbizarre</p>
-                    <p>Vous demandez : Salamèche</p>
-                    <p>Statut : En attente</p>
+                    <p>Recipient: Example player</p>
+                    <p>Offered Pokémon: Bulbasaur</p>
+                    <p>Requested Pokémon: Charmander</p>
+                    <p>Status: Pending</p>
                 </article>
             </section>
         </main>
