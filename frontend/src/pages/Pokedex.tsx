@@ -1,6 +1,6 @@
 import PokemonCard from "../components/PokemonCard";
 import { type Pokemon } from "../types/Pokemon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 type SearchData = {
@@ -8,7 +8,29 @@ type SearchData = {
 }
 
 export default function Pokedex() {
-     const pokemons: Pokemon[] = [
+    const [error, setError] = useState<string>("");
+
+    // useEffect(() => {
+    //     fetch("/api/pokemons")
+    //         .then((response) => {
+    //             if (!response.ok) {
+    //                 throw new Error("Erreur rencontrée");
+    //             }
+    //             return response.json();
+    //         })
+    //         .then((data) => {
+    //             setPokemons(data);
+    //         })
+    //         .catch((error) => {
+    //             setError(error.message)
+    //         })
+    // }, []);
+    
+    // if (error) {
+    //     return <div>Error : {error} </div>
+    // }
+
+    const initialPokemons: Pokemon[] = [
         {
             id: 1,
             name: "Bulbasaur",
@@ -32,16 +54,16 @@ export default function Pokedex() {
     ];
 
     const [searchData, setSearch] = useState<SearchData>({ 
-        search: "",}        
-    );
+        search: "",
+    });
     const [selectedType, setSelectedType] = useState<string>("Tous");
-    
-    let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.type === selectedType || selectedType === "Tous"));
+    const [pokemons, setPokemons] = useState<Pokemon[]>(initialPokemons);
+   let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.type === selectedType || selectedType === "Tous"));
 
      
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-            setSearch({...searchData, [e.target.name] : e.target.value});             
-        }
+        setSearch({...searchData, [e.target.name] : e.target.value});             
+    }
 
 
     return (
