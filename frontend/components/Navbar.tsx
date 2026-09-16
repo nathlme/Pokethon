@@ -1,4 +1,6 @@
 import { } from "react";
+import pokeball from "../assets/pokeball.png";
+import hyperball from "../assets/hyperball.png";
 
 interface NavbarProps {
     darkMode: boolean;
@@ -32,14 +34,17 @@ function Navbar({ darkMode, onToggleTheme }: NavbarProps) {
                         className="
                             rounded-full
                             border-2 border-white dark:border-yellow-400
-                            px-3 py-2
-                            font-bold
+                            p-1
                             transition
-                            hover:bg-white hover:text-red-600
-                            dark:hover:bg-yellow-400 dark:hover:text-black
+                            hover:bg-white
+                            dark:hover:bg-yellow-400
                         "
                     >
-                        {darkMode ? "" : ""}
+                        <img
+                            src={darkMode ? hyperball : pokeball}
+                            alt={darkMode ? "Mode clair" : "Mode sombre"}
+                            className="h-8 w-8"
+                        />
                     </button>
                 </div>
             </div>
