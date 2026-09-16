@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import { Link } from "react-router-dom";
 
+
+
 type FormData = {
     email: string;
     password: string;
@@ -34,7 +36,8 @@ export default function Login() {
                 <label>Mot de passe :</label><br />
                 <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}/><br />
 
-                <button type="submit">Se connecter</button> <p>Pas encore de compte ? <Link to="/register">S'inscrire ici</Link> </p>
+                <button type="submit">Se connecter</button> 
+                {/* <p>Pas encore de compte ? <Link to="/register">S'inscrire ici</Link> </p>  J'ai mis en commentaire le temps d'avoir les routes */}
             </form>
         </div>
     );

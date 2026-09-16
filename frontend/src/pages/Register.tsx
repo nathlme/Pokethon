@@ -26,7 +26,7 @@ export default function Register() {
             return msg;
         }
 
-        if (regex.test(password)) {
+        if (!regex.test(password)) {
             msg = "Le mot de passe doit contenir au moins une majuscule et un chiffre";
             return msg;
         }
@@ -45,6 +45,7 @@ export default function Register() {
 
             if (message != "") {
                 setError(message);
+                return message;
             }
 
             setError("");
@@ -64,7 +65,8 @@ export default function Register() {
                 <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}/><br />
                 {error && <p>{error}</p>}
 
-                <button type="submit">S'inscrire</button><p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>
+                <button type="submit">S'inscrire</button>
+                {/* <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  J'ai mis en commentaire le temps d'avoir les routes */}
             </form>
         </div>
     );
