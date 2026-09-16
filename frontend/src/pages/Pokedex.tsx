@@ -12,6 +12,7 @@ export default function Pokedex() {
         {
             id: 1,
             name: "Bulbasaur",
+            type: "Plante",
             sprite_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
             hp: 45,
             attack: 49,
@@ -21,6 +22,7 @@ export default function Pokedex() {
         {
             id: 4,
             name: "Charmander",
+            type: "Feu",
             sprite_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
             hp: 39,
             attack: 52,
@@ -32,23 +34,30 @@ export default function Pokedex() {
     const [searchData, setSearch] = useState<SearchData>({ 
         search: "",}        
     );
-
+    const [selectedType, setSelectedType] = useState<string>("Tous");
     
-    let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()));
+    let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.type === selectedType || selectedType === "Tous"));
 
+     
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-            setSearch({...searchData, [e.target.name] : e.target.value});
-            console.log(searchData)
-             
+            setSearch({...searchData, [e.target.name] : e.target.value});             
         }
 
-    
 
     return (
         <div>
             <h1>Pokédex</h1>
             <label>Rechercher un Pokemon </label>
             <input type="text" name="search" value={searchData.search} onChange={handleChange}/>
+            
+            <select name="type" id="type" onChange={(e) => setSelectedType(e.target.value)}>
+                <option value="Tous">Tous</option>
+                <option value="Feu">Feu</option>
+                <option value="Eau">Eau</option>
+                <option value="Plante">Plante</option>
+                <option value="Foudre">Foudre</option>
+                <option value="Combat">Combat</option>
+            </select>
             {filteredList.map((pokemon) => (
                 <PokemonCard key={pokemon.id} pokemon={pokemon} />
                 ))}
