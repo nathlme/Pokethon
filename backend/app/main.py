@@ -1,13 +1,26 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from schemas import UserCreate
-from database import get_db
+from backend.app.models.user import User
+from backend.app.security import hash_password
+from backend.app.schemas.user_schemas import UserCreate, UserResponse
+from backend.app.models.database import get_db
 
 
 app = FastAPI()
 
 
-@app.post("/auth/register")
+@app.post("/auth/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    return user
+    hash = hash_password(user.password)
+    new_user = User(
+        username = user.username,
+        email = user.email,
+        hashed_password = hash
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
