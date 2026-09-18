@@ -1,13 +1,11 @@
-from fastapi import FastAPI, Depends
-from FastAPI.achievement import Achievement
-from FastAPI.UserAchievement import UserAchievement
-from database import Base, engine
+from fastapi import FastAPI, Depends, HTTPException
+from app.database import Base, engine
 from sqlalchemy.orm import Session
 
-from backend.app.models.user import User
-from backend.app.security import hash_password
-from backend.app.schemas.user_schemas import UserCreate, UserResponse
-from backend.app.database import get_db
+from app.models.user import User
+from app.security import hash_password, verify_password
+from app.schemas.user_schemas import UserCreate, UserResponse, UserLogin
+from app.database import get_db
 
 
 app = FastAPI()
@@ -17,6 +15,16 @@ Base.metadata.create_all(bind=engine)
 
 @app.post("/auth/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
+     
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user :
+        raise HTTPException(status_code=400, detail="Email déjà utilisé")
+
+    existing_username = db.query(User).filter(User.username == user.username).first()
+    if existing_username :
+        raise HTTPException(status_code=400, detail="Pseudo déjà utilisé")
+
+    
     hash = hash_password(user.password)
     new_user = User(
         username = user.username,
@@ -29,3 +37,22 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+
+@app.post("/auth/login", response_model=UserResponse)
+def login(user: UserLogin , db: Session = Depends(get_db)):
+
+     
+
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user : 
+        password_valid = verify_password(user.password, existing_user.hashed_password)
+    else : 
+        raise HTTPException(status_code=404, detail="Email inexistant") 
+
+    if not password_valid:
+        raise HTTPException(status_code=400, detail="Mot de passe incorrect")
+     
+
+    return existing_user
+
