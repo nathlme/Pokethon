@@ -1,7 +1,7 @@
 import PokemonCard from "../components/PokemonCard";
 import { type Pokemon } from "../types/Pokemon";
 import { useEffect, useState } from "react";
-
+import Navbar from "../../components/Navbar";
 
 type SearchData = {
     search: string;

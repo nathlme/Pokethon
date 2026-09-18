@@ -1,8 +1,3 @@
-/* ---------------------------------------------------------------
-   PokéDex & Collection — styles globaux (P5)
-   Tailwind v4 : tout se configure ici, pas de tailwind.config.js
-   --------------------------------------------------------------- */
-
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -70,9 +65,7 @@
     }
 }
 
-/* ---------------------------------------------------------------
-   2. Base : ce qui s'applique sans aucune classe
-   --------------------------------------------------------------- */
+/* 2. Base : ce qui s'applique sans aucune classe */
 
 @layer base {
     html {
@@ -108,10 +101,7 @@
     }
 }
 
-/* ---------------------------------------------------------------
-   3. Composants réutilisables
-   À utiliser par toute l'équipe pour que les 5 pages restent cohérentes.
-   --------------------------------------------------------------- */
+/* 3. Composants réutilisables */
 
 @layer components {
     /* Conteneur de page — même largeur que la Navbar */
@@ -125,9 +115,7 @@
         @apply dark:border-white/10 dark:bg-pokedex-slate;
     }
 
-    /* Boutons
-       En Tailwind v4 on ne peut pas @apply une classe custom dans une autre —
-       les utilitaires de base sont donc répétés dans chaque variante. */
+    /* Boutons */
     .btn-primary {
         @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2;
         @apply font-semibold transition-colors;
