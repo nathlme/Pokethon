@@ -3,6 +3,7 @@ import os
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from jwt.exceptions import InvalidTokenError
 
 
 load_dotenv()
@@ -28,3 +29,11 @@ def create_access_token(user_id: int):
     token = jwt.encode(payload,SECRET_KEY,ALGORITHM)
 
     return token 
+
+
+def decode_access_token(token: str): 
+    try :
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+    except InvalidTokenError: 
+        return None 

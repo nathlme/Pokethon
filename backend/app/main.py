@@ -3,16 +3,32 @@ from app.database import Base, engine
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-from app.security import hash_password, verify_password, create_access_token
+from app.security import hash_password, verify_password, create_access_token, decode_access_token
 from app.schemas.user_schemas import UserCreate, UserResponse, UserLogin, TokenResponse
 from app.database import get_db
+from fastapi.security import OAuth2PasswordBearer
 
 
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 Base.metadata.create_all(bind=engine)
  
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    payload = decode_access_token(token)
 
+    if not payload: 
+        raise HTTPException(status_code=400, detail="Token expiré")
+
+    user_id = int(payload["sub"])
+    current_user = db.query(User).filter(User.id == user_id).first()
+
+    if not current_user :
+        raise HTTPException(status_code=404, detail="utilisateur introuvable")
+    
+    return current_user
+
+    
 @app.post("/auth/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
      
