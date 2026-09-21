@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import apiFetch from "../services/api";
 
 type FormData = {
     username : string;
@@ -17,7 +17,9 @@ export default function Register() {
     });
     
     const [error, setError] = useState<string>("");
-
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState<boolean>(false);
+    
 
     function isPasswordValid(password: string): string {
         let msg = "";
@@ -40,17 +42,30 @@ export default function Register() {
         setFormData({...formData, [e.target.name] : e.target.value});
     }
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
             e.preventDefault();
-           const message = isPasswordValid(formData.password)
-
+            const message = isPasswordValid(formData.password)
             if (message != "") {
                 setError(message);
-                return message;
+                return;
             }
-
             setError("");
-            console.log(formData);
+            setLoading(true);
+
+            try {
+                const response = await apiFetch("/auth/register", { method: "POST", headers: {"Content-Type" : "application/json"}, body: JSON.stringify(formData)} )
+                if (!response.ok) {
+                    setError("Inscription refusée. Vérifie tes informations.");
+                    return;
+                }
+                navigate("/login");
+
+            } catch{
+                setError("Impossible de contacter le serveur. Réessaie plus tard.")
+            } finally {
+                setLoading(false);
+            }
+             
         }
 
     return (
@@ -59,14 +74,16 @@ export default function Register() {
             
             <form onSubmit={handleSubmit}>
                 <label>Pseudo :</label><br />
-                <input type="text" name="username" id="username" value={formData.username} onChange={handleChange} /><br />
+                <input type="text" name="username" id="username" value={formData.username} onChange={handleChange} required /><br />
                 <label>Email :</label><br />
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} /><br />
+                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required /><br />
                 <label>Mot de passe :</label><br />
-                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}/><br />
+                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
                 {error && <p>{error}</p>}
 
-                <button type="submit">S'inscrire</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Inscription en cours..." : "S'inscrire"}
+                </button> 
                 {/* <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  J'ai mis en commentaire le temps d'avoir les routes */}
             </form>
         </div>

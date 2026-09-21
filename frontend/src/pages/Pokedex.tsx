@@ -1,7 +1,8 @@
 import PokemonCard from "../components/PokemonCard";
 import { type Pokemon } from "../types/Pokemon";
 import { useEffect, useState } from "react";
-import Navbar from "../../components/Navbar";
+import Navbar from "../components/Navbar";
+import apiFetch from "../services/api";
 
 type SearchData = {
     search: string;
@@ -9,55 +10,38 @@ type SearchData = {
 
 export default function Pokedex() {
     const [error, setError] = useState<string>("");
-
-    // useEffect(() => {
-    //     fetch("/api/pokemons")
-    //         .then((response) => {
-    //             if (!response.ok) {
-    //                 throw new Error("Erreur rencontrée");
-    //             }
-    //             return response.json();
-    //         })
-    //         .then((data) => {
-    //             setPokemons(data);
-    //         })
-    //         .catch((error) => {
-    //             setError(error.message)
-    //         })
-    // }, []);
-    
-    // if (error) {
-    //     return <div>Error : {error} </div>
-    // }
-
-    const initialPokemons: Pokemon[] = [
-        {
-            id: 1,
-            name: "Bulbasaur",
-            type: "Plante",
-            sprite_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-            hp: 45,
-            attack: 49,
-            defense: 49,
-            speed: 45
-        },
-        {
-            id: 4,
-            name: "Charmander",
-            type: "Feu",
-            sprite_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
-            hp: 39,
-            attack: 52,
-            defense: 43,
-            speed: 65
-        }
-    ];
-
     const [searchData, setSearch] = useState<SearchData>({ 
         search: "",
     });
     const [selectedType, setSelectedType] = useState<string>("Tous");
-    const [pokemons, setPokemons] = useState<Pokemon[]>(initialPokemons);
+    const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        apiFetch("/pokemons")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Erreur rencontrée");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                setPokemons(data);
+            })
+            .catch((error) => {
+                setError(error.message)
+            })
+            .finally(() => {setLoading(false);})
+    }, []);
+    
+    if (loading) {
+        return <p>Chargement des Pokémon...</p>;
+    }
+    if (error) {
+        return <div>Error : {error} </div>
+    }
+
    let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.type === selectedType || selectedType === "Tous"));
 
      
@@ -80,9 +64,13 @@ export default function Pokedex() {
                 <option value="Foudre">Foudre</option>
                 <option value="Combat">Combat</option>
             </select>
-            {filteredList.map((pokemon) => (
-                <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                ))}
+            {filteredList.length === 0 ? (
+                <p>Aucun Pokémon trouvé</p>
+            ) : (
+                filteredList.map((pokemon) => (
+                    <PokemonCard key={pokemon.id} pokemon={pokemon} />
+                ))
+            )}
         </div>
     )
 }
