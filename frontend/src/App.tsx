@@ -2,14 +2,21 @@
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Pokedex from "./pages/Pokedex";
-import Login from "./pages/Login";
-import "../global.css";
 
 function App() {
+    const [darkMode, setDarkMode] = useState(
+        () => localStorage.getItem("theme") === "dark"
+    );
+
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", darkMode);
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
+    }, [darkMode]);
+
     return (
         <>
             <Navbar darkMode={darkMode} onToggleTheme={() => setDarkMode(!darkMode)} />
-                <Login />
+                <Pokedex />
             <main className="page">...</main>
         </>        
     );
