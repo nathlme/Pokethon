@@ -51,26 +51,78 @@ export default function Pokedex() {
 
 
     return (
-        <div>
-            <h1>Pokédex</h1>
-            <label>Rechercher un Pokemon </label>
-            <input type="text" name="search" value={searchData.search} onChange={handleChange}/>
+        <div className="page">
+
+        <h1 className="text-display text-pokedex-red mb-8">
+            Pokédex
+        </h1>
+
+        <div className="card mb-8">
             
-            <select name="type" id="type" onChange={(e) => setSelectedType(e.target.value)}>
+            <div className="mb-4">
+                <label className="field-label" htmlFor="search">
+                    Rechercher un Pokémon
+                </label>
+
+                <input
+                    className="field"
+                    type="text"
+                    id="search"
+                    name="search"
+                    value={searchData.search}
+                    onChange={handleChange}
+                    placeholder="Nom du Pokémon..."
+            />
+        </div>
+
+        <div>
+            <label className="field-label" htmlFor="type">Filtres Par type</label>
+            
+            <select 
+                className="field"
+                name="type" 
+                id="type" 
+                onChange={(e) => setSelectedType(e.target.value)}
+            >
+                
                 <option value="Tous">Tous</option>
                 <option value="Feu">Feu</option>
                 <option value="Eau">Eau</option>
                 <option value="Plante">Plante</option>
                 <option value="Foudre">Foudre</option>
                 <option value="Combat">Combat</option>
+                <option value="Normal">Normal</option>
+                <option value="Feu">Feu</option>
+                <option value="Eau">Eau</option>
+                <option value="Foudre">Foudre</option>
+                <option value="Plante">Plante</option>
+                <option value="Glace">Glace</option>
+                <option value="Combat">Combat</option>
+                <option value="Poison">Poison</option>
+                <option value="Sol">Sol</option>
+                <option value="Vol">Vol</option>
+                <option value="Psy">Psy</option>
+                <option value="Insecte">Insecte</option>
+                <option value="Roche">Roche</option>
+                <option value="Spectre">Spectre</option>
+                <option value="Dragon">Dragon</option>
+                <option value="Ténèbres">Ténèbres</option>
+                <option value="Acier">Acier</option>
+                <option value="Fée">Fée</option>
             </select>
-            {filteredList.length === 0 ? (
-                <p>Aucun Pokémon trouvé</p>
-            ) : (
-                filteredList.map((pokemon) => (
-                    <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                ))
-            )}
+         </div>
+
         </div>
-    )
+
+        <div className="card-grid">
+            {filteredList.map((pokemon) => (
+                <PokemonCard
+                    key={pokemon.id}
+                    pokemon={pokemon}
+                />
+            ))}
+        </div>
+
+    </div>
+)
 }
