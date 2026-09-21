@@ -67,12 +67,40 @@ export default function Pokedex() {
 
 
     return (
-        <div>
-            <h1>Pokédex</h1>
-            <label>Rechercher un Pokemon </label>
-            <input type="text" name="search" value={searchData.search} onChange={handleChange}/>
+        <div className="page">
+
+        <h1 className="text-display text-pokedex-red mb-8">
+            Pokédex
+        </h1>
+
+        <div className="card mb-8">
             
-            <select name="type" id="type" onChange={(e) => setSelectedType(e.target.value)}>
+            <div className="mb-4">
+                <label className="field-label" htmlFor="search">
+                    Rechercher un Pokémon
+                </label>
+
+                <input
+                    className="field"
+                    type="text"
+                    id="search"
+                    name="search"
+                    value={searchData.search}
+                    onChange={handleChange}
+                    placeholder="Nom du Pokémon..."
+            />
+        </div>
+
+        <div>
+            <label className="field-label" htmlFor="type">Filtres Par type</label>
+            
+            <select 
+                className="field"
+                name="type" 
+                id="type" 
+                onChange={(e) => setSelectedType(e.target.value)}
+            >
+                
                 <option value="Tous">Tous</option>
                 <option value="Feu">Feu</option>
                 <option value="Eau">Eau</option>
@@ -80,9 +108,19 @@ export default function Pokedex() {
                 <option value="Foudre">Foudre</option>
                 <option value="Combat">Combat</option>
             </select>
-            {filteredList.map((pokemon) => (
-                <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                ))}
+         </div>
+
         </div>
-    )
+
+        <div className="card-grid">
+            {filteredList.map((pokemon) => (
+                <PokemonCard
+                    key={pokemon.id}
+                    pokemon={pokemon}
+                />
+            ))}
+        </div>
+
+    </div>
+)
 }
