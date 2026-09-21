@@ -5,6 +5,8 @@ from app.database import get_db
 from app.models.team import Team
 from app.schemas.team import TeamCreate, TeamUpdate, TeamOut
 from app.core.security import get_current_user
+from app.services.team_service import auto_generate_team
+from app.schemas.team_slot import TeamSlotOut
 
 router = APIRouter(prefix="/teams", tags=["teams"])
 
@@ -39,3 +41,15 @@ def rename_team(team_id: int, team_in: TeamUpdate, db: Session = Depends(get_db)
     db.commit()
     db.refresh(team)
     return team
+
+@router.post("/auto-generate", response_model=list[TeamSlotOut])
+def auto_generate(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    team = db.query(Team).filter(Team.user_id == current_user.id).first()
+    if not team:
+        raise HTTPException(status_code=404, detail="Aucune équipe trouvée")
+
+    captures = current_user.captures
+    if not captures:
+        raise HTTPException(status_code=400, detail="Aucune capture disponible pour générer une équipe")
+
+    return auto_generate_team(db, team, captures)
