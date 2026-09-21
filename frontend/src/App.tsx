@@ -7,7 +7,6 @@ import PokemonDetail from "./pages/PokemonDetail";
 import PrivateRoute from "./components/PrivateRoute";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Pokedex from "./pages/Pokedex";
 
 function App() {
     const [darkMode, setDarkMode] = useState(
