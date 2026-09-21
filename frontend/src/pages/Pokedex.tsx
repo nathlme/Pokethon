@@ -107,6 +107,24 @@ export default function Pokedex() {
                 <option value="Plante">Plante</option>
                 <option value="Foudre">Foudre</option>
                 <option value="Combat">Combat</option>
+                <option value="Normal">Normal</option>
+                <option value="Feu">Feu</option>
+                <option value="Eau">Eau</option>
+                <option value="Foudre">Foudre</option>
+                <option value="Plante">Plante</option>
+                <option value="Glace">Glace</option>
+                <option value="Combat">Combat</option>
+                <option value="Poison">Poison</option>
+                <option value="Sol">Sol</option>
+                <option value="Vol">Vol</option>
+                <option value="Psy">Psy</option>
+                <option value="Insecte">Insecte</option>
+                <option value="Roche">Roche</option>
+                <option value="Spectre">Spectre</option>
+                <option value="Dragon">Dragon</option>
+                <option value="Ténèbres">Ténèbres</option>
+                <option value="Acier">Acier</option>
+                <option value="Fée">Fée</option>
             </select>
          </div>
 
