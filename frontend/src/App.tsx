@@ -16,6 +16,7 @@ function App() {
                     <Route path="/pokemon/:id" element={<PokemonDetail />} />
                     <Route path="/collection" element={<div>Collection (à venir)</div>} />
                     <Route path="/trades" element={<div>Échanges (à venir)</div>} />
+                    <p>azfhauhf</p>
                 </Route>
             </Routes>
         </BrowserRouter>
