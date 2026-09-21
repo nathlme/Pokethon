@@ -1,9 +1,7 @@
 // App.tsx
 import { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
+import Navbar from "../components/Navbar";
 import Login from "./pages/Login";
-import Pokedex from "./pages/Pokedex";
-
 
 function App() {
     const [darkMode, setDarkMode] = useState(
@@ -20,7 +18,7 @@ function App() {
             <Navbar darkMode={darkMode} onToggleTheme={() => setDarkMode(!darkMode)} />
                 <Pokedex />
             <main className="page">...</main>
-        </>
+        </>        
     );
 }
 
