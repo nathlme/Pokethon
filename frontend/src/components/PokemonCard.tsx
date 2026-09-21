@@ -12,7 +12,7 @@ export default function PokemonCard({pokemon}: PokemonCardProps) {
             <h2>{pokemon.name}</h2>
             <p>Type : {pokemon.type}</p>
 
-            <p>PV : {pokemon.hp}</p>
+            <p>Pv : {pokemon.hp}</p>
             <p>Attaque : {pokemon.attack}</p>
             <p>Defense : {pokemon.defense}</p>
             <p>Vitesse : {pokemon.speed}</p>
