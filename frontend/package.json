@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/nathlme/Pokethon/issues"
   },
-  "homepage": "https://github.com/nathlme/Pokethon#readme"
+  "homepage": "https://github.com/nathlme/Pokethon#readme",
+  "devDependencies": {
+    "@types/react": "^19.3.0"
+  }
 }
