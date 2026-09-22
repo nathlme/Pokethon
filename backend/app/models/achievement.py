@@ -10,3 +10,4 @@ class Achievement(Base):
     label = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     threshold = Column(Integer, nullable=True)
+    achievement = relationship("Achievement")
