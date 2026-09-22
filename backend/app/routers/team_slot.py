@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.team import Team
 from app.models.team_slot import TeamSlot
 from app.schemas.team_slot import TeamSlotCreate, TeamSlotOut
-from app.core.security import get_current_user
+from app.security import get_current_user
 
 router = APIRouter(prefix="/team-slots", tags=["team-slots"])
 
