@@ -1,6 +1,7 @@
 import { } from "react";
 import pokeball from "../assets/pokeball.png";
 import hyperball from "../assets/hyperball.png";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
     darkMode: boolean;
@@ -8,6 +9,13 @@ interface NavbarProps {
 }
 
 function Navbar({ darkMode, onToggleTheme }: NavbarProps) {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
     return (
         <nav
             className="
@@ -28,7 +36,9 @@ function Navbar({ darkMode, onToggleTheme }: NavbarProps) {
                     <a href="/pokedex" className="transition hover:text-yellow-300">Pokédex</a>
                     <a href="/collection" className="transition hover:text-yellow-300">Ma Collection</a>
                     <a href="/trades" className="transition hover:text-yellow-300">Échanges</a>
-
+                    <button type="button" onClick={handleLogout}>
+                        Déconnexion
+                    </button>
                     <button
                         onClick={onToggleTheme}
                         className="

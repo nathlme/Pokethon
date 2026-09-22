@@ -3,6 +3,7 @@ from app.database import Base, engine
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.models.capture import Capture
 from app.models.pokemons import Pokemon
 from app.routers.pokemons import router as pokemon_router
 from app.models.user import User

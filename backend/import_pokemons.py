@@ -1,7 +1,6 @@
 import json
 import sys
-from urllib.request import urlopen
-
+from urllib.request import Request, urlopen
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine
@@ -33,9 +32,16 @@ TYPES = {
 def fetch_pokemon(number: int):
     url = f"https://pokeapi.co/api/v2/pokemon/{number}"
 
-    with urlopen(url, timeout=20) as response:
-        return json.load(response)
+    request = Request(
+        url,
+        headers={
+            "User-Agent": "PokethonStudentProject/1.0",
+            "Accept": "application/json",
+        },
+    )
 
+    with urlopen(request, timeout=20) as response:
+        return json.load(response)
 
 def main():
     count = int(sys.argv[1]) if len(sys.argv) > 1 else 20
