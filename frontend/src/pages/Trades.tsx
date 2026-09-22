@@ -1,5 +1,9 @@
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+
 import apiFetch from "../services/api";
+import PokemonCard from "../components/PokemonCard";
+import { type Pokemon } from "../types/Pokemon";
+
 
 type Capture = {
     id: number;
@@ -18,8 +22,10 @@ type Trade = {
     created_at: string;
 };
 
+
 export default function Trades() {
     const [captures, setCaptures] = useState<Capture[]>([]);
+    const [pokemons, setPokemons] = useState<Pokemon[]>([]);
     const [trades, setTrades] = useState<Trade[]>([]);
 
     const [offeredCaptureId, setOfferedCaptureId] = useState("");
@@ -28,17 +34,20 @@ export default function Trades() {
 
     const [message, setMessage] = useState("");
 
+
     useEffect(() => {
         loadCaptures();
+        loadPokemons();
         loadTrades();
     }, []);
+
 
     async function loadCaptures() {
         try {
             const response = await apiFetch("/captures/");
 
             if (!response.ok) {
-                throw new Error("Unable to load captures");
+                throw new Error();
             }
 
             const data = await response.json();
@@ -47,6 +56,23 @@ export default function Trades() {
             setMessage("Unable to load your Pokémon.");
         }
     }
+
+
+    async function loadPokemons() {
+        try {
+            const response = await apiFetch("/pokemons");
+
+            if (!response.ok) {
+                throw new Error();
+            }
+
+            const data = await response.json();
+            setPokemons(data);
+        } catch {
+            setMessage("Unable to load Pokémon data.");
+        }
+    }
+
 
     async function loadTrades() {
         try {
@@ -63,8 +89,17 @@ export default function Trades() {
         }
     }
 
+
+    function getPokemon(capture: Capture) {
+        return pokemons.find(
+            pokemon => pokemon.id === capture.pokemon_id
+        );
+    }
+
+
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
         setMessage("");
 
         if (!offeredCaptureId || !targetUserId || !requestedCaptureId) {
@@ -87,92 +122,176 @@ export default function Trades() {
 
             if (!response.ok) {
                 const error = await response.json();
-                setMessage(error.detail ?? "Unable to create trade.");
+
+                setMessage(
+                    error.detail ?? "Unable to create trade."
+                );
+
                 return;
             }
 
-            setMessage("Trade created successfully.");
+            setMessage("Trade created successfully!");
 
             setOfferedCaptureId("");
             setTargetUserId("");
             setRequestedCaptureId("");
 
             await loadTrades();
+
         } catch {
             setMessage("Trade service is currently unavailable.");
         }
     }
+
 
     async function handleTradeAction(
         tradeId: number,
         action: "accept" | "refuse"
     ) {
         try {
-            const response = await apiFetch(`/trades/${tradeId}/${action}`, {
-                method: "PUT",
-            });
+            const response = await apiFetch(
+                `/trades/${tradeId}/${action}`,
+                {
+                    method: "PUT",
+                }
+            );
 
             if (!response.ok) {
                 const error = await response.json();
-                setMessage(error.detail ?? `Unable to ${action} trade.`);
+
+                setMessage(
+                    error.detail ?? `Unable to ${action} trade.`
+                );
+
                 return;
             }
 
             setMessage(`Trade ${action}ed successfully.`);
+
             await loadTrades();
+
         } catch {
             setMessage("Trade service is currently unavailable.");
         }
     }
 
-    const receivedTrades = trades.filter(
-        trade => trade.to_user_id !== undefined
-    );
 
     return (
-        <div className="mx-auto max-w-5xl p-6">
-            <h1 className="mb-8 text-3xl font-bold">
-                Trades
+        <div className="page">
+
+            <h1 className="text-display text-pokedex-red mb-8">
+                Pokémon Trades
             </h1>
 
-            <section className="mb-10 rounded-lg border p-6">
-                <h2 className="mb-4 text-xl font-semibold">
+
+            <section className="card mb-8">
+
+                <h2 className="mb-6 text-2xl font-bold">
+                    Choose a Pokémon to offer
+                </h2>
+
+
+                {captures.length === 0 ? (
+                    <p>
+                        You don't have any Pokémon available.
+                    </p>
+                ) : (
+
+                    <div className="card-grid">
+
+                        {captures.map(capture => {
+
+                            const pokemon = getPokemon(capture);
+
+                            if (!pokemon) {
+                                return null;
+                            }
+
+                            const selected =
+                                offeredCaptureId === String(capture.id);
+
+                            return (
+
+                                <button
+                                    key={capture.id}
+                                    type="button"
+                                    onClick={() =>
+                                        setOfferedCaptureId(
+                                            String(capture.id)
+                                        )
+                                    }
+                                    className={
+                                        selected
+                                            ? "rounded-xl border-4 border-red-600 p-2"
+                                            : "rounded-xl border-2 border-transparent p-2 hover:border-red-300"
+                                    }
+                                >
+
+                                    <PokemonCard
+                                        pokemon={pokemon}
+                                    />
+
+                                    {capture.nickname && (
+                                        <p className="mt-2 font-bold">
+                                            {capture.nickname}
+                                        </p>
+                                    )}
+
+                                    {selected && (
+                                        <p className="mt-2 font-bold text-red-600">
+                                            Selected
+                                        </p>
+                                    )}
+
+                                </button>
+                            );
+                        })}
+
+                    </div>
+                )}
+
+            </section>
+
+
+            <section className="card mb-8">
+
+                <h2 className="mb-6 text-2xl font-bold">
                     Create a trade
                 </h2>
 
+
                 <form
                     onSubmit={handleSubmit}
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-5"
                 >
-                    <label>
-                        Pokémon to offer
-                        <select
-                            className="mt-1 w-full rounded border p-2"
-                            value={offeredCaptureId}
-                            onChange={event =>
-                                setOfferedCaptureId(event.target.value)
-                            }
+
+                    <div>
+
+                        <label className="field-label">
+                            Selected Pokémon
+                        </label>
+
+                        <div className="field">
+                            {offeredCaptureId
+                                ? `Capture #${offeredCaptureId}`
+                                : "Choose a Pokémon above"}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            className="field-label"
+                            htmlFor="target-user"
                         >
-                            <option value="">
-                                Choose a Pokémon
-                            </option>
+                            Target player
+                        </label>
 
-                            {captures.map(capture => (
-                                <option
-                                    key={capture.id}
-                                    value={capture.id}
-                                >
-                                    {capture.nickname ??
-                                        `Pokémon #${capture.pokemon_id}`}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    <label>
-                        Target player ID
                         <input
-                            className="mt-1 w-full rounded border p-2"
+                            className="field"
+                            id="target-user"
                             type="number"
                             min="1"
                             value={targetUserId}
@@ -181,12 +300,22 @@ export default function Trades() {
                             }
                             placeholder="Player ID"
                         />
-                    </label>
 
-                    <label>
-                        Requested capture ID
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            className="field-label"
+                            htmlFor="requested-capture"
+                        >
+                            Requested Pokémon
+                        </label>
+
                         <input
-                            className="mt-1 w-full rounded border p-2"
+                            className="field"
+                            id="requested-capture"
                             type="number"
                             min="1"
                             value={requestedCaptureId}
@@ -195,62 +324,112 @@ export default function Trades() {
                             }
                             placeholder="Capture ID"
                         />
-                    </label>
+
+                    </div>
+
 
                     <button
                         type="submit"
-                        className="rounded bg-red-600 px-4 py-2 font-semibold text-white"
+                        className="
+                            rounded-lg
+                            bg-red-600
+                            px-5 py-3
+                            font-bold
+                            text-white
+                            transition
+                            hover:bg-red-700
+                        "
                     >
-                        Create trade
+                        Send trade request
                     </button>
+
                 </form>
 
+
                 {message && (
-                    <p className="mt-4">
+                    <p className="mt-5 font-semibold">
                         {message}
                     </p>
                 )}
+
             </section>
 
-            <section className="mb-10">
-                <h2 className="mb-4 text-xl font-semibold">
+
+            <section className="card">
+
+                <h2 className="mb-6 text-2xl font-bold">
                     My trades
                 </h2>
 
+
                 {trades.length === 0 ? (
-                    <p>No trades yet.</p>
+
+                    <p>
+                        No trades yet.
+                    </p>
+
                 ) : (
+
                     <div className="flex flex-col gap-4">
-                        {receivedTrades.map(trade => (
+
+                        {trades.map(trade => (
+
                             <article
                                 key={trade.id}
-                                className="rounded-lg border p-4"
+                                className="
+                                    rounded-xl
+                                    border
+                                    p-5
+                                    shadow-sm
+                                "
                             >
-                                <p>
-                                    From user: {trade.from_user_id}
-                                </p>
 
-                                <p>
-                                    To user: {trade.to_user_id}
-                                </p>
+                                <div className="flex justify-between">
 
-                                <p>
-                                    Offered capture: #{trade.offered_capture_id}
-                                </p>
+                                    <h3 className="font-bold">
+                                        Trade #{trade.id}
+                                    </h3>
 
-                                <p>
-                                    Requested capture: #{trade.requested_capture_id}
-                                </p>
+                                    <span className="font-semibold">
+                                        {trade.status}
+                                    </span>
 
-                                <p>
-                                    Status: {trade.status}
-                                </p>
+                                </div>
+
+
+                                <div className="mt-4 grid gap-2 md:grid-cols-2">
+
+                                    <p>
+                                        From player #{trade.from_user_id}
+                                    </p>
+
+                                    <p>
+                                        To player #{trade.to_user_id}
+                                    </p>
+
+                                    <p>
+                                        Offered capture #{trade.offered_capture_id}
+                                    </p>
+
+                                    <p>
+                                        Requested capture #{trade.requested_capture_id}
+                                    </p>
+
+                                </div>
+
 
                                 {trade.status === "pending" && (
-                                    <div className="mt-3 flex gap-2">
+
+                                    <div className="mt-5 flex gap-3">
+
                                         <button
                                             type="button"
-                                            className="rounded bg-green-600 px-3 py-2 text-white"
+                                            className="
+                                                rounded
+                                                bg-green-600
+                                                px-4 py-2
+                                                text-white
+                                            "
                                             onClick={() =>
                                                 handleTradeAction(
                                                     trade.id,
@@ -261,9 +440,15 @@ export default function Trades() {
                                             Accept
                                         </button>
 
+
                                         <button
                                             type="button"
-                                            className="rounded bg-red-600 px-3 py-2 text-white"
+                                            className="
+                                                rounded
+                                                bg-red-600
+                                                px-4 py-2
+                                                text-white
+                                            "
                                             onClick={() =>
                                                 handleTradeAction(
                                                     trade.id,
@@ -273,13 +458,18 @@ export default function Trades() {
                                         >
                                             Refuse
                                         </button>
+
                                     </div>
                                 )}
+
                             </article>
                         ))}
+
                     </div>
                 )}
+
             </section>
+
         </div>
     );
 }
