@@ -48,6 +48,19 @@ Felix  : CRUD Type et Capture complets (modèles, schémas, routers, tests), pag
 Jeannot Louis, modification feat/trade-note pour mettre à jour les models et faire correspondre au travail des mes collègues vis à vis de la database
 Mise à jour de la pages Trade.jsx ajout des détails ainsi que des appels et des relations avec le backend, trade pour le moment non fonctionnel, travail aussi sur le visuel de la page pour correspondre a la thématique du site et des autres pages, modification de certain components utiliser via la stylisation et ajout de certains autres ainsi 
 
+compte rendu 4 : 
+
+tessa : CollectionPage modifié au design du projet et merge de la branch feat/collection-team sur dev.
+Merge de la branch feat/team-teamslot sur dev.
+Correction de quelques problèmes et de l’intégration de apiFetch sur une nouvelle branch fix/collection-team et merge de cette même branch sur dev.
+
+nicolas : ajout de badges, models, schemas, script et services (backend en python et non frontend)
+
+Nathan Lamarche : J'ai ajouté un bouton logout, ajouté tout les pokémons dans la DB pour qu'il s'affiche dans la page pokedex ajout de quelque filtre sur la meme page. j'ai fait plein de backend nécessaire pour l'affichage du frontend
+
+felix : CRUD Type et Capture finalisés (modèles, schémas, routers, tests), page Détail Pokémon et configuration du routing React Router mergés dans dev. Résolution de plusieurs conflits de merge (database.py, App.tsx)
+
+Jeannot Louis : Mise à jour des branches `feat/trade-note` et `feat/route-note` pour les synchroniser avec le travail de l’équipe et la base de données. Ajout des routes et vérifications pour `Trade` et `Note`. Mise à jour de `Trades.tsx` avec appels backend, sélection visuelle des Pokémon via `PokemonCard` et amélioration du design pour rester cohérent avec le reste du site. La partie Trade reste partiellement dépendante des prochaines routes backend.
 
 
 Lien GitHub : https://github.com/nathlme/Pokethon.git
