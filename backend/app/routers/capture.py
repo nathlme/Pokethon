@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.capture import Capture
 from app.schemas.capture import CaptureCreate, CaptureRead
-from app.main import get_current_user
+from app.dependencies import get_current_user
 from app.models.user import User
 
 router = APIRouter(prefix="/captures", tags=["captures"])
 
 
-@router.get("/", response_model=list[CaptureRead])
+@router.get("", response_model=list[CaptureRead])
 def list_my_captures(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -18,7 +18,7 @@ def list_my_captures(
     return db.query(Capture).filter(Capture.user_id == current_user.id).all()
 
 
-@router.post("/", response_model=CaptureRead, status_code=201)
+@router.post("", response_model=CaptureRead, status_code=201)
 def catch_pokemon(
     payload: CaptureCreate,
     db: Session = Depends(get_db),

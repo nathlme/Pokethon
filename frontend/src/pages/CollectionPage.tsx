@@ -24,13 +24,27 @@ function CollectionPage() {
     async function fetchData() {
       try {
         const capturesResponse = await apiFetch("/captures");
+
+        if (!capturesResponse.ok) {
+          throw new Error(`Erreur captures : ${capturesResponse.status}`);
+        }
+
         const capturesData = await capturesResponse.json();
-          setCaptures(capturesData);
+
+        if (!Array.isArray(capturesData)) {
+          throw new Error("La réponse /captures n'est pas une liste.");
+        }
+
+        setCaptures(capturesData);
 
         const teamResponse = await apiFetch("/teams/me");
+
+        if (!teamResponse.ok) {
+          throw new Error(`Erreur équipe : ${teamResponse.status}`);
+        }
         const teamData = await teamResponse.json();
-          setTeamId(teamData.id);
-          setSlots(teamData.slots ?? []);
+        setTeamId(teamData.id);
+        setSlots(teamData.slots ?? []);
       } catch {
         setError("Impossible de charger votre collection.");
       } finally {

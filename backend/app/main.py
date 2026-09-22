@@ -2,15 +2,17 @@ from fastapi import FastAPI, Depends, HTTPException
 from app.database import Base, engine
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.dependencies import get_current_user
 from app.models.capture import Capture
 from app.models.pokemons import Pokemon
 from app.routers.pokemons import router as pokemon_router
+from app.routers.capture import router as capture_router
+from app.routers.team import router as team_router
+from app.routers.team_slot import router as team_slot_router
 from app.models.user import User
 from app.security import hash_password, verify_password, create_access_token, decode_access_token
 from app.schemas.user_schemas import UserCreate, UserResponse, UserLogin, TokenResponse
 from app.database import get_db
-from fastapi.security import OAuth2PasswordBearer
 
 
 app = FastAPI()
@@ -27,26 +29,13 @@ app.add_middleware(
 )
 
 app.include_router(pokemon_router)
+app.include_router(capture_router)
+app.include_router(team_router)
+app.include_router(team_slot_router)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-Base.metadata.create_all(bind=engine)
- 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    payload = decode_access_token(token)
-
-    if not payload: 
-        raise HTTPException(status_code=400, detail="Token expiré")
-
-    user_id = int(payload["sub"])
-    current_user = db.query(User).filter(User.id == user_id).first()
-
-    if not current_user :
-        raise HTTPException(status_code=404, detail="utilisateur introuvable")
-    
-    return current_user
-
+Base.metadata.create_all(bind=engine)   
     
 @app.post("/auth/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):

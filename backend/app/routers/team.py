@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.team import Team
 from app.schemas.team import TeamCreate, TeamUpdate, TeamOut
-from app.core.security import get_current_user
+from app.dependencies import get_current_user
 from app.services.team_service import auto_generate_team
 from app.schemas.team_slot import TeamSlotOut
 
