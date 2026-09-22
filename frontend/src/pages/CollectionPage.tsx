@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
-import "./CollectionPage.css";
 
 interface Capture {
   id: number;
@@ -61,18 +60,27 @@ function CollectionPage() {
     }
   }
 
-  if (loading) return <p>Chargement...</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (loading) return <p className="page">Chargement...</p>;
+  if (error) return <p className="page text-pokedex-red">{error}</p>;
 
   return (
-    <div className="collection-page">
-      <h1>Ma Collection</h1>
-      <div className="captures-grid">
-        {captures.length === 0 && <p>Aucune capture pour le moment.</p>}
+    <div className="page">
+      <h1 className="text-display mb-6">Ma Collection</h1>
+
+      <div className="card-grid mb-10">
+        {captures.length === 0 && (
+          <p className="text-black/60 dark:text-white/60">Aucune capture pour le moment.</p>
+        )}
         {captures.map((capture) => (
-          <div key={capture.id} className="capture-card">
-            <span>{capture.nickname || `Pokémon #${capture.pokemon_id}`}</span>
-            <select defaultValue="" onChange={(e) => handleAddToSlot(capture.id, Number(e.target.value))}>
+          <div key={capture.id} className="card flex flex-col gap-2">
+            <span className="font-semibold">
+              {capture.nickname || `Pokémon #${capture.pokemon_id}`}
+            </span>
+            <select
+              className="field"
+              defaultValue=""
+              onChange={(e) => handleAddToSlot(capture.id, Number(e.target.value))}
+            >
               <option value="" disabled>
                 Ajouter au slot...
               </option>
@@ -86,19 +94,24 @@ function CollectionPage() {
         ))}
       </div>
 
-      <section className="team-section">
-        <h2>Mon Équipe</h2>
-        <div className="team-slots">
+      <section>
+        <h2 className="mb-3">Mon Équipe</h2>
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[1, 2, 3, 4, 5, 6].map((position) => {
             const slot = slots.find((s) => s.position === position);
             return (
-              <div key={position} className="team-slot">
+              <div
+                key={position}
+                className="card flex items-center justify-center text-center text-sm text-black/60 dark:text-white/60"
+              >
                 {slot ? `Capture #${slot.capture_id}` : `Slot ${position} (vide)`}
               </div>
             );
           })}
         </div>
-        <button onClick={handleAutoGenerate}>Génération auto</button>
+        <button className="btn-primary" onClick={handleAutoGenerate}>
+          Génération auto
+        </button>
       </section>
     </div>
   );
