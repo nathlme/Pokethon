@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../services/api";
+import apiFetch from "../services/api";
 
 interface Capture {
   id: number;
@@ -23,13 +23,15 @@ function CollectionPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const capturesData = await apiFetch("/captures");
-        setCaptures(capturesData);
+        const capturesResponse = await apiFetch("/captures");
+        const capturesData = await capturesResponse.json();
+          setCaptures(capturesData);
 
-        const teamData = await apiFetch("/teams/me");
-        setTeamId(teamData.id);
-        setSlots(teamData.slots ?? []);
-      } catch (err) {
+        const teamResponse = await apiFetch("/teams/me");
+        const teamData = await teamResponse.json();
+          setTeamId(teamData.id);
+          setSlots(teamData.slots ?? []);
+      } catch {
         setError("Impossible de charger votre collection.");
       } finally {
         setLoading(false);
@@ -41,10 +43,11 @@ function CollectionPage() {
   async function handleAddToSlot(captureId: number, position: number) {
     if (!teamId) return;
     try {
-      const newSlot = await apiFetch("/team-slots", {
-        method: "POST",
+      const response = await apiFetch("/team-slots", {
+      method: "POST",
         body: JSON.stringify({ team_id: teamId, capture_id: captureId, position }),
-      });
+        });
+      const newSlot = await response.json();
       setSlots((prev) => [...prev, newSlot]);
     } catch {
       alert("Impossible d'ajouter cette capture à l'équipe.");
@@ -53,8 +56,9 @@ function CollectionPage() {
 
   async function handleAutoGenerate() {
     try {
-      const generatedSlots = await apiFetch("/teams/auto-generate", { method: "POST" });
-      setSlots(generatedSlots);
+      const response = await apiFetch("/teams/auto-generate", { method: "POST" });
+      const generatedSlots = await response.json();
+        setSlots(generatedSlots);
     } catch {
       alert("Impossible de générer une équipe automatiquement.");
     }
