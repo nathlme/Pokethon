@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import apiFetch from "../services/api";
+import { Link } from "react-router-dom";
 
 type FormData = {
     username : string;
@@ -81,10 +82,10 @@ export default function Register() {
                 <input className="field" type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
                 {error && <p className="field-message mb-4">{error}</p>}
 
-                <button className="btn-primary w-full" type="submit" disabled={loading}>
+                <button className="btn-primary w-full mt-3" type="submit" disabled={loading}>
                     {loading ? "Inscription en cours..." : "S'inscrire"}
                 </button> 
-                {/* <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  J'ai mis en commentaire le temps d'avoir les routes */}
+                <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  
             </form>
         </div>
     );
