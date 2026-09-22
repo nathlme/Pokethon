@@ -1,7 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException
 from app.database import Base, engine
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
+from app.models.capture import Capture
+from app.models.pokemons import Pokemon
+from app.routers.pokemons import router as pokemon_router
 from app.models.user import User
 from app.security import hash_password, verify_password, create_access_token, decode_access_token
 from app.schemas.user_schemas import UserCreate, UserResponse, UserLogin, TokenResponse
@@ -10,6 +14,21 @@ from fastapi.security import OAuth2PasswordBearer
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(pokemon_router)
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 Base.metadata.create_all(bind=engine)

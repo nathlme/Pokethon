@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import apiFetch from "../services/api";
+import { Link } from "react-router-dom";
 
 type FormData = {
     username : string;
@@ -69,22 +70,22 @@ export default function Register() {
         }
 
     return (
-        <div>
-            <h1>Inscription</h1>
+        <div className="page">
+            <h1 className="text-display text-pokedex-red mb-6 text-center">Inscription</h1>
             
-            <form onSubmit={handleSubmit}>
-                <label>Pseudo :</label><br />
-                <input type="text" name="username" id="username" value={formData.username} onChange={handleChange} required /><br />
-                <label>Email :</label><br />
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required /><br />
-                <label>Mot de passe :</label><br />
-                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
-                {error && <p>{error}</p>}
+            <form className="card mx-auto max-w-md p-8" onSubmit={handleSubmit}>
+                <label className="field-label">Pseudo :</label><br />
+                <input className="field" type="text" name="username" id="username" value={formData.username} onChange={handleChange} required /><br />
+                <label className="field-label">Email :</label><br />
+                <input className="field" type="email" name="email" id="email" value={formData.email} onChange={handleChange} required /><br />
+                <label className="field-label">Mot de passe :</label><br />
+                <input className="field" type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
+                {error && <p className="field-message mb-4">{error}</p>}
 
-                <button type="submit" disabled={loading}>
+                <button className="btn-primary w-full mt-3" type="submit" disabled={loading}>
                     {loading ? "Inscription en cours..." : "S'inscrire"}
                 </button> 
-                {/* <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  J'ai mis en commentaire le temps d'avoir les routes */}
+                <p>Déjà un compte ? <Link to="/login">Se connecter ici</Link></p>  
             </form>
         </div>
     );

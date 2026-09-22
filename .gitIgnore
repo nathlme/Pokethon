@@ -1,67 +1,23 @@
-# =========================
-# PYTHON / FASTAPI
-# =========================
-
-# Environnement virtuel
-.venv/
+# Python
 venv/
-env/
-
-# Cache Python
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Tests / couverture
+*.pyc
 .pytest_cache/
-.coverage
-htmlcov/
 
-# =========================
-# REACT / NODE / VITE
-# =========================
+# Env / secrets
+.env
+.env.local
 
-# Dépendances Node
+# Node / frontend
 node_modules/
-
-# Build
 dist/
 build/
 
-# Cache Vite
-.vite/
-
-# Logs npm
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# =========================
-# VARIABLES D'ENVIRONNEMENT
-# =========================
-
-.env
-.env.local
-.env.*.local
-
-# =========================
-# IDE
-# =========================
-
-# VS Code
+# Editeurs / OS
 .vscode/
-
-# JetBrains / PyCharm
 .idea/
-
-# =========================
-# OS
-# =========================
-
-# Windows
-Thumbs.db
-Desktop.ini
-
-# macOS
 .DS_Store
+
+# Base de données locale
+*.db
+*.sqlite3

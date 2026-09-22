@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import apiFetch from "../services/api";
+import { Link } from "react-router-dom";
+
 
 type FormData = {
     email: string;
@@ -49,19 +51,19 @@ export default function Login() {
 
     return (
         <div>
-            <h1>Connexion</h1>
+            <h1 className="text-display text-pokedex-red mb-6 text-center">Connexion</h1>
             
-            <form onSubmit={handleSubmit}> 
-                <label>Email :</label><br />
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required  /><br />
-                <label>Mot de passe :</label><br />
-                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
+            <form className="card mx-auto max-w-md p-8" onSubmit={handleSubmit}> 
+                <label className="field-label">Email :</label><br />
+                <input className="field" type="email" name="email" id="email" value={formData.email} onChange={handleChange} required  /><br />
+                <label className="field-label">Mot de passe :</label><br />
+                <input className="field" type="password" name="password" id="password" value={formData.password} onChange={handleChange} required /><br />
 
-                {error && <p>{error}</p>}
-                <button type="submit" disabled={loading}>
+                {error && <p className="field-message mb-4">{error}</p>}
+                <button className="btn-primary w-full  mt-3" type="submit" disabled={loading}>
                     {loading ? "Connexion en cours..." : "Se connecter"}
                 </button> 
-                {/* <p>Pas encore de compte ? <Link to="/register">S'inscrire ici</Link> </p>  J'ai mis en commentaire le temps d'avoir les routes */}
+                <p>Pas encore de compte ? <Link to="/register">S'inscrire ici</Link> </p>  
             </form>
         </div>
     );
