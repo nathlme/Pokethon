@@ -8,7 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Trades from "./pages/Trades";
-
+import CollectionPage from "./pages/CollectionPage"
 
 function App() {
     const [darkMode, setDarkMode] = useState(
@@ -32,7 +32,7 @@ function App() {
                     <Route element={<PrivateRoute />}>
                         <Route path="/pokedex" element={<Pokedex />} />
                         <Route path="/pokemon/:id" element={<PokemonDetail />} />
-                        <Route path="/collection" element={<div>Collection (à venir)</div>} />
+                        <Route path="/collection" element={<CollectionPage />} />
                         <Route path="/trades" element={<Trades />} />
                     </Route>
                 </Routes>
