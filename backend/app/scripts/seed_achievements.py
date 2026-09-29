@@ -5,8 +5,8 @@ Usage : python -m app.scripts.seed_achievements
 """
 
 from sqlalchemy.orm import Session
-from app.models.pokemons import Pokemon
 from app.models.achievement import Achievement
+from app.models.type import Type
 from ..database import SessionLocal
 
 
@@ -21,14 +21,6 @@ DISCOVERY_LABELS = {
     151: ("Champion de Kanto", "Découvrir les 151 Pokémon de Kanto"),
 }
 
-
-TYPE_LABELS_FR = {
-    "normal": "Normal", "fire": "Feu", "water": "Eau", "electric": "Électrik",
-    "grass": "Plante", "ice": "Glace", "fighting": "Combat", "poison": "Poison",
-    "ground": "Sol", "flying": "Vol", "psychic": "Psy", "bug": "Insecte",
-    "rock": "Roche", "ghost": "Spectre", "dragon": "Dragon", "dark": "Ténèbres",
-    "steel": "Acier", "fairy": "Fée",
-}
 
 
 def _get_or_create(db: Session, code: str, label: str, description: str, threshold: int | None):
@@ -58,12 +50,12 @@ def seed_type_achievements(db: Session) -> None:
     all_types = sorted(type1_values | type2_values)
 
     for type_name in all_types:
-        label_fr = TYPE_LABELS_FR.get(type_name, type_name.capitalize())
+       for (type_name,) in db.query(Type.name).order_by(Type.name):
         _get_or_create(
             db,
             code=f"type_{type_name}",
-            label=f"Maître {label_fr}",
-            description=f"Capturer tous les Pokémon de type {label_fr}",
+            label=f"Maître {type_name}",
+            description=f"Capturer tous les Pokémon de type {type_name}",
             threshold=None,  
         )
 

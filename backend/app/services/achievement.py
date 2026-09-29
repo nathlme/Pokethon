@@ -3,7 +3,9 @@ from app.models import Achievement, UserAchievement
 from app.models.team import Team
 from app.models.capture import Capture
 from app.models.UserAchievement import UserAchievement
-from app.models.pokemons import Pokemon
+from app.models.type import Type
+from app.models.pokemon_type import pokemon_type
+
 
 TEAM_FULL_SIZE = 6
 
@@ -34,9 +36,9 @@ def _has_full_team(db: Session, user_id: int) -> bool:
 
 def _all_pokemon_ids_of_type(db: Session, type_name: str) -> set[int]:
     rows = (
-        db.query(Pokemon.id)
-        .filter((Pokemon.type1 == type_name) | (Pokemon.type2 == type_name))
-        .all()
+        db.query(pokemon_type.c.pokemon.id)
+        .join(Type, Type.id == pokemon_type.c.type_id)
+        .filter(Type.name == type_name)        .all()
     )
     return {r[0] for r in rows}
 
