@@ -20,6 +20,20 @@ router = APIRouter(prefix="/achievements", tags=["achievements"])
 def list_achievements(db: Session = Depends(get_db)):
     return db.query(Achievement).all()
 
+# Badges débloqués par l'utilisateur connecté
+
+@router.get("/me", response_model=list[UserAchievementOut])
+def get_my_achievements(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    return (
+        db.query(UserAchievement)
+        .options(joinedload(UserAchievement.achievement))
+        .filter(UserAchievement.user_id == current_user.id)
+        .order_by(UserAchievement.unlocked_at.desc())
+        .all()
+    )
 
 @router.get("/{achievement_id}", response_model=AchievementOut)
 def get_achievement(achievement_id: int, db: Session = Depends(get_db)):
@@ -61,19 +75,3 @@ def delete_achievement(achievement_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Achievement introuvable")
     db.delete(achievement)
     db.commit()
-
-
-# Badges débloqués par l'utilisateur connecté
-
-@router.get("/me", response_model=list[UserAchievementOut])
-def get_my_achievements(
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    return (
-        db.query(UserAchievement)
-        .options(joinedload(UserAchievement.achievement))
-        .filter(UserAchievement.user_id == current_user.id)
-        .order_by(UserAchievement.unlocked_at.desc())
-        .all()
-    )
