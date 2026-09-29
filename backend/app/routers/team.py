@@ -6,6 +6,7 @@ from app.models.team import Team
 from app.schemas.team import TeamCreate, TeamUpdate, TeamOut
 from app.dependencies import get_current_user
 from app.services.team_service import auto_generate_team
+from app.services.achievement import check_achievements
 from app.schemas.team_slot import TeamSlotOut
 
 router = APIRouter(prefix="/teams", tags=["teams"])
@@ -51,5 +52,5 @@ def auto_generate(db: Session = Depends(get_db), current_user=Depends(get_curren
     captures = current_user.captures
     if not captures:
         raise HTTPException(status_code=400, detail="Aucune capture disponible pour générer une équipe")
-
+    check_achievements(current_user.id, db)
     return auto_generate_team(db, team, captures)

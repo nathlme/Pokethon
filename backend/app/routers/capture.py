@@ -5,6 +5,7 @@ from app.database import get_db
 from app.models.capture import Capture
 from app.models.pokemons import Pokemon
 from app.schemas.capture import CaptureCreate, CaptureRead, CaptureUpdate
+from app.services.achievement import check_achievements
 from app.dependencies import get_current_user
 from app.models.user import User
 
@@ -53,6 +54,7 @@ def catch_pokemon(
     db.add(db_capture)
     db.commit()
     db.refresh(db_capture)
+    check_achievements(current_user.id, db)
     return db_capture
 
 
