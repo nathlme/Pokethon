@@ -36,7 +36,6 @@ app.include_router(team_slot_router)
 app.include_router(type_router)
 
 
-
 Base.metadata.create_all(bind=engine)   
     
 @app.post("/auth/register", response_model=UserResponse)
@@ -81,3 +80,6 @@ def login(user: UserLogin , db: Session = Depends(get_db)):
     token = TokenResponse(access_token=user_JWT, token_type="bearer")
     return token 
 
+@app.get("/users/me", response_model=UserResponse)
+def get_me(current_user=Depends(get_current_user)):
+    return current_user

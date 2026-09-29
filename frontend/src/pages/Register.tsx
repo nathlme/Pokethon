@@ -38,6 +38,16 @@ export default function Register() {
         return msg;
     }
 
+    function isValidEmail(email: string): string {
+        let msg = "";
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            msg = "Email Invalide"
+            return msg
+        }
+        return msg 
+    }
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setFormData({...formData, [e.target.name] : e.target.value});
@@ -46,6 +56,13 @@ export default function Register() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
             e.preventDefault();
             const message = isPasswordValid(formData.password)
+            const email = isValidEmail(formData.email)
+            
+            if (email != "") {
+                setError(email);
+                return
+            }
+
             if (message != "") {
                 setError(message);
                 return;
