@@ -3,6 +3,8 @@ import { type Pokemon } from "../types/Pokemon";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import apiFetch from "../services/api";
+import { Link } from "react-router-dom";
+
 
 type SearchData = {
     search: string;
@@ -111,10 +113,13 @@ export default function Pokedex() {
 
         <div className="card-grid">
             {filteredList.map((pokemon) => (
-                <PokemonCard
-                    key={pokemon.id}
-                    pokemon={pokemon}
-                />
+                <Link to={`/pokemon/${pokemon.id}`} >
+                    
+                    <PokemonCard
+                        key={pokemon.id}
+                        pokemon={pokemon}
+                    /> 
+                </Link>
             ))}
         </div>
 
