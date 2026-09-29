@@ -1,4 +1,7 @@
+from .user import User
+from .pokemons import Pokemon
+from .type import Type
+from .pokemon_type import pokemon_type
+from .capture import Capture
 from .team import Team
 from .team_slot import TeamSlot
-
-# Normalement il y aura ici tous les imports des modèles du projet
