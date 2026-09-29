@@ -5,3 +5,5 @@ from .pokemon_type import pokemon_type
 from .capture import Capture
 from .team import Team
 from .team_slot import TeamSlot
+from .achievement import Achievement
+from .UserAchievement import UserAchievement

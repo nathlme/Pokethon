@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from .models import Achievement, UserAchievement 
+from app.models import Achievement, UserAchievement 
 from app.models.team import Team
 from app.models.capture import Capture
 from app.models.UserAchievement import UserAchievement

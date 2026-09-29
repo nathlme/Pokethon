@@ -10,6 +10,7 @@ from app.routers.capture import router as capture_router
 from app.routers.team import router as team_router
 from app.routers.team_slot import router as team_slot_router
 from app.routers.type import router as type_router
+from app.routers.achievement import router as achievement_router
 from app.models.user import User
 from app.security import hash_password, verify_password, create_access_token, decode_access_token
 from app.schemas.user_schemas import UserCreate, UserResponse, UserLogin, TokenResponse

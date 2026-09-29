@@ -9,7 +9,7 @@ from ..schemas.achievement import (
     AchievementOut,
     UserAchievementOut,
 )
-from ..auth import get_current_user     
+from ..dependencies import get_current_user     
 
 router = APIRouter(prefix="/achievements", tags=["achievements"])
 
