@@ -5,6 +5,9 @@ class CaptureCreate(BaseModel):
     pokemon_id: int
     nickname: Optional[str] = None
 
+class CaptureUpdate(BaseModel):
+    nickname: Optional[str] = None
+
 class CaptureRead(BaseModel):
     id: int
     user_id: int
