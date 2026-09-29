@@ -1,3 +1,17 @@
+import pytest
+from app.main import app, get_current_user
+
+
+class FakeUser:
+    id = 1
+
+
+@pytest.fixture(autouse=True)
+def override_auth():
+    app.dependency_overrides[get_current_user] = lambda: FakeUser()
+    yield
+
+
 def test_create_type(client):
     response = client.post("/types/", json={"name": "fire"})
     assert response.status_code == 201
