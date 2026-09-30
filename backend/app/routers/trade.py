@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.models.team_slot import TeamSlot
 from app.models.capture import Capture
 from app.models.trade import Trade
 from app.models.user import User
@@ -15,6 +14,39 @@ router = APIRouter(
     prefix="/trades",
     tags=["trades"]
 )
+
+def trade_to_response(trade: Trade, db: Session):
+    offered_capture = db.query(Capture).filter(
+        Capture.id == trade.offered_capture_id
+    ).first()
+
+    requested_capture = db.query(Capture).filter(
+        Capture.id == trade.requested_capture_id
+    ).first()
+
+    return {
+        "id": trade.id,
+        "from_user_id": trade.from_user_id,
+        "to_user_id": trade.to_user_id,
+
+        "offered_capture_id": trade.offered_capture_id,
+        "requested_capture_id": trade.requested_capture_id,
+
+        "offered_pokemon_id":
+            offered_capture.pokemon_id if offered_capture else None,
+
+        "requested_pokemon_id":
+            requested_capture.pokemon_id if requested_capture else None,
+
+        "offered_nickname":
+            offered_capture.nickname if offered_capture else None,
+
+        "requested_nickname":
+            requested_capture.nickname if requested_capture else None,
+
+        "status": trade.status,
+        "created_at": trade.created_at,
+    }
 
 
 @router.post("/", response_model=TradeRead, status_code=201)
@@ -87,7 +119,7 @@ def create_trade(
     db.commit()
     db.refresh(new_trade)
 
-    return new_trade
+    return trade_to_response(new_trade, db)
 
 
 @router.get("/me", response_model=list[TradeRead])
@@ -102,7 +134,10 @@ def get_my_trades(
         )
     ).all()
 
-    return trades
+    return [
+        trade_to_response(trade, db)
+        for trade in trades
+    ]
 
 @router.put("/{trade_id}/accept", response_model=TradeRead)
 def accept_trade(
@@ -181,19 +216,6 @@ def accept_trade(
             detail="The requested capture has changed owner"
         )
 
-    # Do not leave another player's capture inside an existing team.
-    capture_in_team = (
-        db.query(TeamSlot)
-        .filter(TeamSlot.capture_id.in_(capture_ids))
-        .first()
-    )
-
-    if capture_in_team:
-        raise HTTPException(
-            status_code=409,
-            detail="Remove both captures from their teams before trading"
-        )
-
     # Both ownership changes and the trade status are committed together.
     try:
         offered_capture.user_id = trade.to_user_id
@@ -208,7 +230,7 @@ def accept_trade(
         db.rollback()
         raise
 
-    return trade
+    return trade_to_response(trade, db)
 
 
 @router.put("/{trade_id}/refuse", response_model=TradeRead)
@@ -252,4 +274,4 @@ def refuse_trade(
         db.rollback()
         raise
 
-    return trade
+    return trade_to_response(trade, db)

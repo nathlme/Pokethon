@@ -16,8 +16,16 @@ type Trade = {
     id: number;
     from_user_id: number;
     to_user_id: number;
+
     offered_capture_id: number;
     requested_capture_id: number;
+
+    offered_pokemon_id: number | null;
+    requested_pokemon_id: number | null;
+
+    offered_nickname: string | null;
+    requested_nickname: string | null;
+
     status: string;
     created_at: string;
 };
@@ -134,6 +142,20 @@ export default function Trades() {
             ?? `Capture #${captureId}`;
     }
 
+    function getTradePokemonName(
+        pokemonId: number | null,
+        nickname: string | null,
+        captureId: number
+    ) {
+        if (nickname) return nickname;
+
+        const pokemon = pokemons.find(
+            item => item.id === pokemonId
+        );
+
+        return pokemon?.name ?? `Capture #${captureId}`;
+    }
+
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -245,7 +267,11 @@ export default function Trades() {
                         </p>
 
                         <p className="font-bold">
-                            {getCaptureName(trade.offered_capture_id)}
+                            {getTradePokemonName(
+                                trade.offered_pokemon_id,
+                                trade.offered_nickname,
+                                trade.offered_capture_id
+                            )}
                         </p>
                     </div>
 
@@ -255,7 +281,11 @@ export default function Trades() {
                         </p>
 
                         <p className="font-bold">
-                            {getCaptureName(trade.requested_capture_id)}
+                            {getTradePokemonName(
+                                trade.requested_pokemon_id,
+                                trade.requested_nickname,
+                                trade.requested_capture_id
+                            )}
                         </p>
                     </div>
                 </div>
