@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import apiFetch from "../services/api";
 import { type Pokemon } from "../types/Pokemon";
+import NoteEditor from "../components/NoteEditor";
 
 type Capture = {
   id: number;
@@ -12,7 +13,8 @@ type Capture = {
 function PokemonDetail() {
   const { id } = useParams<{ id: string }>();
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [captured, setCaptured] = useState(false);
+  const [captureId, setCaptureId] = useState<number | null>(null);
+  const captured = captureId !== null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [capturing, setCapturing] = useState(false);
@@ -34,7 +36,8 @@ function PokemonDetail() {
         const capturesResponse = await apiFetch("/captures");
         if (capturesResponse.ok) {
           const captures: Capture[] = await capturesResponse.json();
-          setCaptured(captures.some((capture) => capture.pokemon_id === pokemonData.id));
+          const existing = captures.find((capture) => capture.pokemon_id === pokemonData.id);
+          setCaptureId(existing ? existing.id : null);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erreur rencontrée");
@@ -58,7 +61,8 @@ function PokemonDetail() {
       if (!response.ok) {
         throw new Error("La capture a échoué");
       }
-      setCaptured(true);
+      const newCapture: Capture = await response.json();
+      setCaptureId(newCapture.id);
     } catch (err) {
       setCaptureError(err instanceof Error ? err.message : "Erreur rencontrée");
     } finally {
@@ -117,7 +121,7 @@ function PokemonDetail() {
 
       {/* Zone réservée pour P4 : édition de note sur la capture */}
       <div className="pokemon-detail__note">
-        {/* P4 : intègre ici ton composant NoteEditor */}
+        {captureId !== null && <NoteEditor captureId={captureId} />}
       </div>
     </div>
   );
