@@ -47,6 +47,32 @@ def create_note(
     return new_note
 
 
+@router.get("/capture/{capture_id}", response_model=list[NoteRead])
+def get_capture_notes(
+    capture_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    capture = db.query(Capture).filter(
+        Capture.id == capture_id
+    ).first()
+
+    if not capture:
+        raise HTTPException(
+            status_code=404,
+            detail="Capture not found"
+        )
+
+    if capture.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="This capture does not belong to you"
+        )
+
+    return db.query(Note).filter(
+        Note.capture_id == capture_id
+    ).order_by(Note.id.desc()).all()
+
 @router.get("/{note_id}", response_model=NoteRead)
 def get_note(
     note_id: int,
