@@ -10,7 +10,7 @@ export default function PokemonCard({pokemon}: PokemonCardProps) {
             <img src={pokemon.sprite_url} alt={pokemon.name} className="h-24 w-24 [image-rendering:pixelated]"/>
 
             <h2 className="mt-2 text-lg">{pokemon.name}</h2>
-            <p>Type : {pokemon.type}</p>
+            <p>Type : {pokemon.types.map((type) => type.name).join(", ")}</p>
 
             <p>Pv : {pokemon.hp}</p>
             <p>Attaque : {pokemon.attack}</p>

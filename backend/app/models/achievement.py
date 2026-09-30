@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text
-from database import Base
+from sqlalchemy.orm import relationship
+from app.database import Base
 
 
 class Achievement(Base):
@@ -10,4 +11,8 @@ class Achievement(Base):
     label = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     threshold = Column(Integer, nullable=True)
-    achievement = relationship("Achievement")
+
+    user_achievements = relationship(
+        "UserAchievement",
+        back_populates="achievement"
+    )

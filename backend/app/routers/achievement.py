@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
+from app.database import get_db
 
-from ..database import get_db          # adapte l'import à ton arborescence
-from ..models import Achievement, UserAchievement
-from ..schemas.achievement import (
+from app.database import Base
+from app.models import Achievement, UserAchievement
+from app.schemas.achievement import (
     AchievementCreate,
     AchievementUpdate,
     AchievementOut,
     UserAchievementOut,
 )
-from ..dependencies import get_current_user     
+from app.dependencies import get_current_user     
 
 router = APIRouter(prefix="/achievements", tags=["achievements"])
 
