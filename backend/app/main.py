@@ -37,6 +37,7 @@ app.include_router(capture_router)
 app.include_router(team_router)
 app.include_router(team_slot_router)
 app.include_router(type_router)
+app.include_router(achievement_router)
 app.include_router(trade_router)
 app.include_router(note_router)
 
