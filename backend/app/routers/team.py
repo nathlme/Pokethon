@@ -14,7 +14,10 @@ router = APIRouter(prefix="/teams", tags=["teams"])
 def get_my_team(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
     team = db.query(Team).filter(Team.user_id == current_user.id).first()
     if not team:
-        raise HTTPException(status_code=404, detail="Aucune équipe trouvée")
+        team = Team(user_id=current_user.id, name="Mon équipe")
+        db.add(team)
+        db.commit()
+        db.refresh(team)
     return team
 
 @router.post("/", response_model=TeamOut, status_code=201)
