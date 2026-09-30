@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.pokemons import Pokemon
 from app.models.type import Type
-from app.schemas.pokemon import PokemonCreate, PokemonRead
+from app.schemas.pokemon import PokemonRead
 from app.dependencies import get_current_user
 
 router = APIRouter(prefix="/pokemons", tags=["pokemons"])
@@ -35,7 +35,7 @@ def list_pokemons(
     if search:
         query = query.filter(
             Pokemon.name.ilike(f"%{search}%")
-       )
+       ) 
 
     if type:
         query = query.filter(
@@ -45,50 +45,54 @@ def list_pokemons(
     return query.order_by(Pokemon.id).all()
 
 
-@router.post("", response_model=PokemonRead, status_code=201)
-def create_pokemon(
-    pokemon_in: PokemonCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
-):
-    existing_pokemon = (
-        db.query(Pokemon)
-        .filter(Pokemon.id == pokemon_in.pokeapi_id)
-        .first()
-    )
 
-    if existing_pokemon:
-        raise HTTPException(
-            status_code=409,
-            detail="Ce Pokémon existe déjà"
-        )
 
-    pokemon = Pokemon(
-        id=pokemon_in.pokeapi_id,
-        name=pokemon_in.name,
-        type="Normal",
-        sprite_url=pokemon_in.sprite_url or "",
-        hp=pokemon_in.hp,
-        attack=pokemon_in.attack,
-        defense=pokemon_in.defense,
-        speed=pokemon_in.speed,
-    )
 
-    normal_type = (
-        db.query(Type)
-        .filter(Type.name == "Normal")
-        .first()
-    )
 
-    if normal_type is None:
-        normal_type = Type(name="Normal")
-        db.add(normal_type)
+# @router.post("", response_model=PokemonRead, status_code=201)
+# def create_pokemon(
+#     pokemon_in: PokemonCreate,
+#     db: Session = Depends(get_db),
+#     current_user=Depends(get_current_user)
+# ):
+#     existing_pokemon = (
+#         db.query(Pokemon)
+#         .filter(Pokemon.id == pokemon_in.pokeapi_id)
+#         .first()
+#     )
 
-    pokemon.types.append(normal_type)
+#     if existing_pokemon:
+#         raise HTTPException(
+#             status_code=409,
+#             detail="Ce Pokémon existe déjà"
+#         )
 
-    db.add(pokemon)
-    db.commit()
-    db.refresh(pokemon)
+#     pokemon = Pokemon(
+#         id=pokemon_in.pokeapi_id,
+#         name=pokemon_in.name,
+#         type="Normal",
+#         sprite_url=pokemon_in.sprite_url or "",
+#         hp=pokemon_in.hp,
+#         attack=pokemon_in.attack,
+#         defense=pokemon_in.defense,
+#         speed=pokemon_in.speed,
+#     )
 
-    return pokemon
+#     normal_type = (
+#         db.query(Type)
+#         .filter(Type.name == "Normal")
+#         .first()
+#     )
+
+#     if normal_type is None:
+#         normal_type = Type(name="Normal")
+#         db.add(normal_type)
+
+#     pokemon.types.append(normal_type)
+
+#     db.add(pokemon)
+#     db.commit()
+#     db.refresh(pokemon)
+
+#     return pokemon
 

@@ -44,7 +44,7 @@ export default function Pokedex() {
         return <div>Error : {error} </div>
     }
 
-   let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.type === selectedType || selectedType === "Tous"));
+   let filteredList: Pokemon[] = pokemons.filter((pokemon) => pokemon.name.toLowerCase().includes(searchData.search.toLowerCase()) && (pokemon.types.some((type) => type.name === selectedType)|| selectedType === "Tous"));
 
      
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
