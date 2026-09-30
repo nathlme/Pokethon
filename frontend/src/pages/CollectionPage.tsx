@@ -89,10 +89,9 @@ function CollectionPage() {
     if (!teamId) return;
     try {
       const response = await apiFetch("/team-slots", {
-        method: "POST",
+      method: "POST",
         body: JSON.stringify({ team_id: teamId, capture_id: captureId, position }),
-      });
-      if (!response.ok) throw new Error();
+        });
       const newSlot = await response.json();
       setSlots((prev) => [...prev, newSlot]);
       await loadAchievements(true);
@@ -104,9 +103,8 @@ function CollectionPage() {
   async function handleAutoGenerate() {
     try {
       const response = await apiFetch("/teams/auto-generate", { method: "POST" });
-      if (!response.ok) throw new Error();
       const generatedSlots = await response.json();
-      setSlots(generatedSlots);
+        setSlots(generatedSlots);
       await loadAchievements(true);
     } catch {
       alert("Impossible de générer une équipe automatiquement.");
