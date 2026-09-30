@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import apiFetch from "../services/api";
+import AchievementCard from "../components/AchievementCard";
+import type { Achievement, UserAchievement } from "../types/Achievement";
 
 interface Capture {
   id: number;
@@ -19,6 +21,34 @@ function CollectionPage() {
   const [teamId, setTeamId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [unlocked, setUnlocked] = useState<Map<number, string>>(new Map());
+  const [newBadges, setNewBadges] = useState<string[]>([]);
+
+  async function loadAchievements(notify = false) {
+    try {
+      const [allRes, mineRes] = await Promise.all([
+        apiFetch("/achievements/"),
+        apiFetch("/achievements/me"),
+      ]);
+      if (!allRes.ok || !mineRes.ok) return;
+
+      const all: Achievement[] = await allRes.json();
+      const mine: UserAchievement[] = await mineRes.json();
+
+      if (notify) {
+        const fresh = mine
+          .filter((u) => !unlocked.has(u.achievement_id))
+          .map((u) => u.achievement.label);
+        if (fresh.length > 0) setNewBadges(fresh);
+      }
+
+      setAchievements(all);
+      setUnlocked(new Map(mine.map((u) => [u.achievement_id, u.unlocked_at])));
+    } catch {
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -51,6 +81,7 @@ function CollectionPage() {
         setLoading(false);
       }
     }
+    loadAchievements();
     fetchData();
   }, []);
 
@@ -58,11 +89,13 @@ function CollectionPage() {
     if (!teamId) return;
     try {
       const response = await apiFetch("/team-slots", {
-      method: "POST",
+        method: "POST",
         body: JSON.stringify({ team_id: teamId, capture_id: captureId, position }),
-        });
+      });
+      if (!response.ok) throw new Error();
       const newSlot = await response.json();
       setSlots((prev) => [...prev, newSlot]);
+      await loadAchievements(true);
     } catch {
       alert("Impossible d'ajouter cette capture à l'équipe.");
     }
@@ -71,8 +104,10 @@ function CollectionPage() {
   async function handleAutoGenerate() {
     try {
       const response = await apiFetch("/teams/auto-generate", { method: "POST" });
+      if (!response.ok) throw new Error();
       const generatedSlots = await response.json();
-        setSlots(generatedSlots);
+      setSlots(generatedSlots);
+      await loadAchievements(true);
     } catch {
       alert("Impossible de générer une équipe automatiquement.");
     }
@@ -130,6 +165,31 @@ function CollectionPage() {
         <button className="btn-primary" onClick={handleAutoGenerate}>
           Génération auto
         </button>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="mb-3">
+          Mes badges ({unlocked.size}/{achievements.length})
+        </h2>
+
+        {newBadges.length > 0 && (
+          <div className="card mb-4">Nouveau badge : {newBadges.join(", ")}</div>
+        )}
+
+        <div className="card-grid">
+          {[...achievements]
+            .sort(
+              (a, b) =>
+                Number(unlocked.has(b.id)) - Number(unlocked.has(a.id)) || a.id - b.id
+            )
+            .map((a) => (
+              <AchievementCard
+                key={a.id}
+                achievement={a}
+                unlockedAt={unlocked.get(a.id)}
+              />
+            ))}
+        </div>
       </section>
     </div>
   );
