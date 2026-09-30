@@ -27,11 +27,18 @@ type Trade = {
     created_at: string;
 };
 
+type CurrentUser = {
+    id: number;
+    username: string;
+    email: string;
+};
+
 
 export default function Trades() {
     const [captures, setCaptures] = useState<Capture[]>([]);
     const [pokemons, setPokemons] = useState<Pokemon[]>([]);
     const [trades, setTrades] = useState<Trade[]>([]);
+    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
     const [offeredCaptureId, setOfferedCaptureId] = useState("");
     const [targetUserId, setTargetUserId] = useState("");
@@ -47,6 +54,7 @@ export default function Trades() {
                 loadCaptures(),
                 loadPokemons(),
                 loadTrades(),
+                loadCurrentUser(),
             ]);
 
             setLoading(false);
@@ -94,21 +102,41 @@ export default function Trades() {
     }
 
 
+    async function loadCurrentUser() {
+        try {
+            const response = await apiFetch("/users/me");
+
+            if (!response.ok) {
+                throw new Error();
+            }
+
+            const data: CurrentUser = await response.json();
+            setCurrentUser(data);
+        } catch {
+            setMessage(
+                "Impossible de récupérer les informations de l'utilisateur."
+            );
+        }
+    }
+
     async function loadTrades() {
         try {
             const response = await apiFetch("/trades/me");
 
             if (!response.ok) {
-                return;
+                throw new Error();
             }
 
             const data: Trade[] = await response.json();
 
             setTrades(data);
-        } catch {
-            // Le backend Trade peut ne pas encore être disponible.
+            
+            catch {
+                setMessage(
+                    "Impossible de charger vos échanges."
+                );
+            }
         }
-    }
 
 
     function getPokemon(capture: Capture) {
@@ -285,9 +313,21 @@ export default function Trades() {
         : undefined;
 
 
-    const pendingTradeCount = trades.filter(
+    const pendingTradeCount = receivedTrades.filter(
         trade => trade.status === "pending"
     ).length;
+
+    const receivedTrades = currentUser
+        ? trades.filter(
+            trade => trade.to_user_id === currentUser.id
+        )
+        : [];
+
+    const sentTrades = currentUser
+        ? trades.filter(
+            trade => trade.from_user_id === currentUser.id
+        )
+        : [];
 
 
     if (loading) {
@@ -818,15 +858,37 @@ export default function Trades() {
                         Historique
                     </p>
 
-                    <h2
-                        className="
-                            mt-1
-                            text-2xl
-                            font-bold
-                        "
-                    >
-                        Mes échanges
+                    <h2 className="mt-1 text-2xl font-bold">
+                        Échanges reçus
                     </h2>
+
+                    {receivedTrades.length === 0 ? (
+                        <p className="mt-4 opacity-70">
+                            Aucun échange reçu.
+                        </p>
+                    ) : (
+                        <div className="mt-5 flex flex-col gap-4">
+                            {receivedTrades.map(trade => (
+                                // mets ici ton article Trade actuel
+                            ))}
+                        </div>
+                    )}
+
+                    <h2 className="mt-10 text-2xl font-bold">
+                        Échanges envoyés
+                    </h2>
+
+                    {sentTrades.length === 0 ? (
+                        <p className="mt-4 opacity-70">
+                            Aucun échange envoyé.
+                        </p>
+                    ) : (
+                        <div className="mt-5 flex flex-col gap-4">
+                            {sentTrades.map(trade => (
+                                // même article, mais sans boutons accept/refuse
+                            ))}
+                        </div>
+                    )}
 
                 </div>
 
@@ -1039,7 +1101,7 @@ export default function Trades() {
                                 </div>
 
 
-                                {trade.status === "pending" && (
+                                {trade.status === "pending" && currentUser?.id === trade.to_user_id && (
 
                                     <div
                                         className="
