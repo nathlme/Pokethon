@@ -36,7 +36,7 @@ def _has_full_team(db: Session, user_id: int) -> bool:
 
 def _all_pokemon_ids_of_type(db: Session, type_name: str) -> set[int]:
     rows = (
-        db.query(pokemon_type.c.pokemon.id)
+        db.query(pokemon_type.c.pokemon_id)
         .join(Type, Type.id == pokemon_type.c.type_id)
         .filter(Type.name == type_name)        .all()
     )
