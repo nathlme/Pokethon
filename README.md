@@ -1,66 +1,196 @@
-# Pokethon
+# Pokethon — PokéDex & Collection
 
-compte rendu seance 1:
+Application web full-stack de collection de Pokémon : explorez le Pokédex, capturez vos Pokémon, composez votre équipe, échangez avec les autres dresseurs et débloquez des badges.
 
-1 : affinage du projet en global
-2 : gestion de projet
-3 : gestion des taches / features par personnes => les membres du groupes sont maintenant autonomes
-4 : premiers push selon peronnes -voir commit-
+Projet scolaire réalisé en groupe de 5, qui couvre à la fois le TP React (frontend) et le TP FastAPI (backend).
 
+## Fonctionnalités
 
-tessa: modéles Team et TeamSlot créer pour les tables SQL et création de database temporaire
+- **Authentification** : inscription et connexion (mot de passe haché, jeton JWT), routes protégées côté frontend.
+- **Pokédex** : liste des Pokémon avec recherche dynamique et filtres par type, page de détail pour chaque Pokémon.
+- **Collection** : capture de Pokémon (surnom, date de capture) et notes associées à chaque capture.
+- **Équipe** : 6 emplacements, assemblage manuel des captures ou **génération automatique par types**.
+- **Échanges (Trades)** : proposition, acceptation et refus d'échanges entre dresseurs.
+- **Badges (Achievements)** : attribution automatique selon des seuils (découverte, collection, équipe complète, maîtrise d'un type).
+- **Thème clair / sombre** : bascule dans la barre de navigation (Pokéball / Hyperball).
 
-nicolas: feat(achievement): creation of a database, a docker compose, a achievement and a userachievement class, some import and things in the main to make it work 
+## Stack technique
 
-Nathan: composants "Login" et "Register" contenant les formulaires de connexion et d'inscription (avec vérification de mot de passe). Travail réalisé sur la branche feat/auth.
+| Couche | Technologies |
+|---|---|
+| Frontend | React 19, TypeScript, React Router, Tailwind CSS 4, Vite |
+| Backend | FastAPI, SQLAlchemy, Alembic, Pydantic, JWT |
+| Base de données | PostgreSQL 16 (Docker) — SQLite en mémoire pour les tests |
+| API tierce | [PokeAPI](https://pokeapi.co), appelée par le backend pour importer les Pokémon |
 
-felix: > J'ai mis en place le socle backend (dépendances, .gitignore, connexion PostgreSQL/SQLAlchemy) sur ma branche back/type-crud, commité et pushé. Prêt à coder le modèle Type ensuite.**
+## Structure du projet
 
+```
+Pokethon/
+├── backend/
+│   ├── app/
+│   │   ├── main.py            # Point d'entrée FastAPI + routes /auth et /users/me
+│   │   ├── database.py        # Connexion SQLAlchemy
+│   │   ├── security.py        # Hachage des mots de passe, JWT
+│   │   ├── dependencies.py    # get_current_user
+│   │   ├── models/            # Modèles SQLAlchemy
+│   │   ├── schemas/           # Schémas Pydantic
+│   │   ├── routers/           # Endpoints par ressource
+│   │   ├── services/          # Logique métier (badges, équipe, sync PokeAPI)
+│   │   ├── scripts/           # seed_achievements.py
+│   │   └── tests/             # Tests (pytest)
+│   ├── alembic/               # Migrations
+│   ├── tests/                 # Tests Team / TeamSlot
+│   ├── import_pokemons.py     # Import des Pokémon depuis PokeAPI
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── pages/             # Pokedex, PokemonDetail, CollectionPage, Trades, Login, Register
+│   │   ├── components/        # Navbar, PokemonCard, AchievementCard, NoteEditor, PrivateRoute
+│   │   ├── services/api.ts    # Appels à l'API
+│   │   └── types/
+│   ├── global.css
+│   └── index.html
+├── docker-compose.yml         # PostgreSQL
+├── vite.config.ts
+└── package.json
+```
 
-louis absent: on lui communique demain
+## Installation
 
+### Prérequis
 
-compte rendu seance 2:
+- Node.js (npm)
+- Python 3.11+
+- Docker (pour PostgreSQL)
 
-tessa : absente elle a eu certain détail mais aura tout demain 
+### 1. Cloner le dépôt
 
-nicolas: réalisation du css global qui sera appliquer à toutes les pages actuel ou future, création de la navbar avec un bouton clair/sombre avec une pokeball pour clair et hyperball pour sombre et commencement des grud pour les achievements ( non push encore car ce n'est pas fini )
+```bash
+git clone https://github.com/nathlme/Pokethon.git
+cd Pokethon
+```
 
-Nathan Lamarche : J'ai merge la branche "feat/auth" a "dev". Création de la page 'Pokedex' avec un type 'pokemon' et un composant 'PokemonCard' sur la branche "feat/pokedex". Ajout d'une barre de rechercher dynamique et d'un filtrage par type. Premier appel API pour récupérer les Pokémons vers la future API avec gestion d'erreur.
+### 2. Base de données
 
-felix : livré le CRUD complet de Type (modèle, schémas, migration Alembic, router, tests) sur back/type-crud, la structure statique de la page Détail Pokémon sur front/pokemon-detail-page, et le squelette du modèle Capture sur back/capture-skeleton — les trois branches pushées sur GitHub.
+```bash
+docker compose up -d
+```
 
-Jeannot Louis : j'ai crée la branch feat/trade-note pour faire les premiers models du trade et du note et ai donc crée et push les fichiers trade.py et note.py j'ai aussi crée la branch feat/trade-front pour faire un premier d'une page statique pour les trades Trades.tsx et push, je suis revenue après en back sur la branch feat/trade-note pour rajouter les schemas liés au models fait pltôt branch mise à jour
+Le conteneur `pokedex-postgres` démarre sur le port `5432` (utilisateur `postgres`, mot de passe `postgres`).
 
-compte rendu seance 3:
+> ⚠️ Le `docker-compose.yml` crée une base nommée `pokedex`, alors que le backend se connecte par défaut à une base `pokethon`. Soit vous créez la base `pokethon` (par exemple avec pgAdmin), soit vous définissez `DATABASE_URL` vers `pokedex` (voir ci-dessous).
 
-tessa : CRUD de Team et démarrage de TeamSlot, avec les schémas Pydantic de validation. Frontend : création branche feat/collection-team, connexion de la page Collection à l'API réelle avec gestion du chargement et des erreurs.
-Finalisation de TeamSlot avec toutes les validations métier et développement de la fonctionnalité de génération automatique d'équipe par types. Frontend : assemblage manuel des captures dans les slots et bouton "Génération auto" connecté.
-Tests unitaires pour Team et TeamSlot et vérification/ajustement du responsive sur la section Équipe.
+### 3. Backend
 
-nicolas : fix de l'import du css sur toutes les pages, modification de la config vite, ajout du style sur la page pokemon ( les components tel que la searchBar et le choix des types selectionner), mise a jour et rajout du style sur l'affichage des pokemons + resolution de quelque bug 
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# Linux / macOS
+source .venv/bin/activate
 
-Nathan Lamarche :
-Création d'une fonction apiFetch sur la branch feat/fetchAPI pour dialoguer avec l'API, résolution de conflit de la branche front/routing-config pour l'ajout des routes react avec React-Router 
+pip install -r backend/requirements.txt
+pip install PyJWT "pwdlib[argon2]" python-dotenv
+```
 
-Felix  : CRUD Type et Capture complets (modèles, schémas, routers, tests), page Détail Pokémon, config React Router + PrivateRoute — tout mergé dans dev.
+> `PyJWT`, `pwdlib` et `python-dotenv` sont utilisés par `security.py` mais ne figurent pas encore dans `requirements.txt` : pensez à les y ajouter.
 
-Jeannot Louis, modification feat/trade-note pour mettre à jour les models et faire correspondre au travail des mes collègues vis à vis de la database
-Mise à jour de la pages Trade.jsx ajout des détails ainsi que des appels et des relations avec le backend, trade pour le moment non fonctionnel, travail aussi sur le visuel de la page pour correspondre a la thématique du site et des autres pages, modification de certain components utiliser via la stylisation et ajout de certains autres ainsi 
+Créez un fichier `.env` (à la racine ou dans `backend/`) :
 
-compte rendu 4 : 
+```env
+SECRET_KEY=une-longue-chaine-aleatoire
+# Optionnel : par défaut postgresql://postgres:postgres@localhost:5432/pokethon
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pokethon
+```
 
-tessa : CollectionPage modifié au design du projet et merge de la branch feat/collection-team sur dev.
-Merge de la branch feat/team-teamslot sur dev.
-Correction de quelques problèmes et de l’intégration de apiFetch sur une nouvelle branch fix/collection-team et merge de cette même branch sur dev.
+Les tables sont créées automatiquement au démarrage de l'API (`Base.metadata.create_all`).
 
-nicolas : ajout de badges, models, schemas, script et services (backend en python et non frontend)
+### 4. Données initiales
 
-Nathan Lamarche : J'ai ajouté un bouton logout, ajouté tout les pokémons dans la DB pour qu'il s'affiche dans la page pokedex ajout de quelque filtre sur la meme page. j'ai fait plein de backend nécessaire pour l'affichage du frontend
+Depuis le dossier `backend` :
 
-felix : CRUD Type et Capture finalisés (modèles, schémas, routers, tests), page Détail Pokémon et configuration du routing React Router mergés dans dev. Résolution de plusieurs conflits de merge (database.py, App.tsx)
+```bash
+# Importer les Pokémon depuis PokeAPI (20 par défaut, ici les 151 de Kanto)
+python import_pokemons.py 151
 
-Jeannot Louis : Mise à jour des branches `feat/trade-note` et `feat/route-note` pour les synchroniser avec le travail de l’équipe et la base de données. Ajout des routes et vérifications pour `Trade` et `Note`. Mise à jour de `Trades.tsx` avec appels backend, sélection visuelle des Pokémon via `PokemonCard` et amélioration du design pour rester cohérent avec le reste du site. La partie Trade reste partiellement dépendante des prochaines routes backend.
+# Créer les badges (idempotent)
+python -m app.scripts.seed_achievements
+```
 
+### 5. Frontend
 
-Lien GitHub : https://github.com/nathlme/Pokethon.git
+À la racine du projet :
+
+```bash
+npm install
+```
+
+## Lancer le projet
+
+Frontend et backend en une commande (le script utilise le venv Windows `.venv\Scripts\python.exe`) :
+
+```bash
+npm run dev:all
+```
+
+Ou séparément :
+
+```bash
+# Frontend — http://localhost:5173
+npm run dev
+
+# Backend — http://127.0.0.1:8000
+python -m uvicorn app.main:app --reload --app-dir backend
+```
+
+Documentation interactive de l'API : <http://127.0.0.1:8000/docs>
+
+## API
+
+| Ressource | Préfixe | Endpoints principaux |
+|---|---|---|
+| Authentification | `/auth` | `POST /auth/register`, `POST /auth/login`, `GET /users/me` |
+| Pokémon | `/pokemons` | `GET /pokemons`, `GET /pokemons/{id}` |
+| Types | `/types` | CRUD complet |
+| Captures | `/captures` | `GET`, `POST`, `PATCH`, `DELETE` |
+| Notes | `/notes` | `POST`, `GET /capture/{capture_id}`, `GET`, `PUT`, `DELETE` |
+| Équipe | `/teams` | `GET /me`, `POST`, `PUT /{id}`, `POST /auto-generate` |
+| Emplacements | `/team-slots` | `POST`, `DELETE /{id}` |
+| Échanges | `/trades` | `POST`, `GET /me`, `PUT /{id}/accept`, `PUT /{id}/refuse` |
+| Badges | `/achievements` | CRUD, `GET /me` pour ses badges débloqués |
+
+## Badges
+
+Les badges sont vérifiés après chaque capture ou échange.
+
+| Famille | Condition |
+|---|---|
+| Découverte | 5, 10, 20, 50, 100 ou 151 espèces **différentes** capturées |
+| Collection | 10, 25 ou 50 captures (doublons inclus) |
+| Stratège | Équipe complète de 6 Pokémon |
+| Maître d'un type | Avoir capturé tous les Pokémon d'un type |
+
+## Tests
+
+Depuis le dossier `backend` :
+
+```bash
+pytest
+```
+
+Les tests utilisent une base SQLite en mémoire : aucune configuration PostgreSQL n'est nécessaire.
+
+## Organisation du travail
+
+- Mono-repo `backend/` + `frontend/`
+- Branches `back/<ressource>` et `front/<page>`, intégrées dans `dev` par pull request
+- Comptes rendus des séances : [docs/comptes-rendus.md](docs/comptes-rendus.md)
+
+## Équipe
+
+Tessa, Nicolas, Nathan, Félix et Louis.
+
+## Lien
+
+Dépôt GitHub : <https://github.com/nathlme/Pokethon>
